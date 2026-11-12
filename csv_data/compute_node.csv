@@ -1,0 +1,36 @@
+node_id,hostname,ip_address,cpu_architecture,os_name
+1,node-ap-south-13-10,10.85.167.97,ARM64,Ubuntu Core 22
+2,node-eu-central-08-08,10.43.6.152,x86_64,Ubuntu Core 22
+3,node-us-west-01-03,192.168.10.17,x86_64,Ubuntu 24.04 LTS
+4,node-us-east-22-03,10.35.172.126,x86_64,Ubuntu Core 22
+5,node-us-west-37-19,10.100.122.208,ARM64,RHEL 9.3
+6,node-us-east-07-14,10.52.120.223,x86_64,Ubuntu 24.04 LTS
+7,node-us-east-26-11,192.168.10.29,x86_64,RHEL 9.3
+8,node-us-west-35-15,10.23.72.120,x86_64,Ubuntu 24.04 LTS
+9,node-eu-central-36-04,10.69.215.5,x86_64,RHEL 9.3
+10,node-us-west-27-16,10.51.232.17,x86_64,Arch Linux
+11,node-us-east-25-09,192.168.10.202,ARM64,Debian 12
+12,node-eu-central-36-16,10.37.56.249,x86_64,Ubuntu Core 22
+13,node-ap-northeast-35-02,192.168.10.16,x86_64,Ubuntu Core 22
+14,node-eu-central-33-17,10.65.21.219,x86_64,Ubuntu 24.04 LTS
+15,node-ap-south-05-08,10.72.64.150,x86_64,Ubuntu Core 22
+16,node-us-east-27-19,10.40.240.68,x86_64,Debian 12
+17,node-us-west-17-13,10.82.77.119,ARM64,Ubuntu 24.04 LTS
+18,node-us-east-30-20,192.168.10.27,x86_64,Ubuntu Core 22
+19,node-us-west-33-09,10.44.226.19,x86_64,Debian 12
+20,node-eu-west-11-15,192.168.10.182,ARM64,Ubuntu Core 22
+21,node-ap-northeast-34-01,192.168.10.143,ARM64,Ubuntu 24.04 LTS
+22,node-us-west-17-04,192.168.10.192,x86_64,Debian 12
+23,node-eu-west-39-07,192.168.10.54,ARM64,Ubuntu Core 22
+24,node-eu-central-17-02,10.54.213.72,x86_64,Ubuntu 24.04 LTS
+25,node-eu-west-09-09,10.56.142.182,ARM64,Ubuntu Core 22
+26,node-us-east-08-03,192.168.10.178,x86_64,Ubuntu Core 22
+27,node-us-east-24-19,10.55.33.12,ARM64,Debian 12
+28,node-us-east-23-07,192.168.10.172,x86_64,Debian 12
+29,node-ap-south-27-20,192.168.10.238,x86_64,RHEL 9.3
+30,node-us-west-27-01,10.42.201.240,ARM64,RHEL 9.3
+31,node-eu-west-11-04,10.4.220.122,x86_64,RHEL 9.3
+32,node-eu-central-23-10,192.168.10.225,x86_64,RHEL 9.3
+33,node-us-east-13-13,10.8.248.199,ARM64,Debian 12
+34,node-ap-northeast-33-13,192.168.10.217,ARM64,Ubuntu 24.04 LTS
+35,node-us-east-17-06,10.33.10.29,ARM64,Debian 12
