@@ -11,7 +11,10 @@ import sys
 import getpass
 import pymysql
 
-SQL_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "algo_fingerprint_data.sql")
+DEFAULT_SQL_FILE = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "database", "seed_data", "algo_fingerprint_data.sql")
+)
+SQL_FILE = DEFAULT_SQL_FILE if os.path.exists(DEFAULT_SQL_FILE) else os.path.join(os.path.dirname(__file__), "algo_fingerprint_data.sql")
 
 def parse_sql_statements(sql_content):
     """

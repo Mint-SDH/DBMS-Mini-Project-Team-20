@@ -65,8 +65,8 @@ DEFAULT_CONFIG = {
     "num_algorithms": 300,
     "num_runs": 4000,
     "seed": 42,
-    "output_sql": "algo_fingerprint_data.sql",
-    "csv_dir": "csv_data",
+    "output_sql": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "database", "seed_data", "algo_fingerprint_data.sql")),
+    "csv_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "database", "seed_data", "csv_data")),
     "export_csv": True
 }
 

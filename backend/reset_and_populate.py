@@ -122,8 +122,8 @@ def main():
     fingerprints = generate_fingerprints(runs)
     detection_logs = generate_detection_logs(fingerprints, baselines)
 
-    sql_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_CONFIG["output_sql"])
-    csv_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), DEFAULT_CONFIG["csv_dir"])
+    sql_path = DEFAULT_CONFIG["output_sql"]
+    csv_dir = DEFAULT_CONFIG["csv_dir"]
     
     write_sql_script(sql_path, developers, nodes, baselines, algorithms, runs, fingerprints, detection_logs)
     write_csv_dumps(csv_dir, developers, nodes, baselines, algorithms, runs, fingerprints, detection_logs)

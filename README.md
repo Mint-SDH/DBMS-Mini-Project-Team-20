@@ -15,7 +15,7 @@
 **ExecutionGuard** is a multi-model database security platform that tracks low-level CPU Hardware Performance Counters (HPCs)—including **Instructions Per Cycle (IPC)**, **Cache Miss Rates**, **Branch Mispredictions**, and **Memory Footprints**—to detect zero-day cryptojacking malware and rogue processes.
 
 The system combines:
-1. **Relational Core (MySQL 8.0+)**: Strongly-typed schema across 7 entities, 1:1 run-to-fingerprint cardinality, automated threat mitigation triggers, stored procedures, deterministic functions, and recursive CTEs for tracking polymorphic algorithm lineages.
+1. **Relational Core (MySQL 8.0+)**: Strongly-typed relational schema across 7 entities, 1:1 run-to-fingerprint cardinality, automated threat mitigation triggers, stored procedures, deterministic functions, and recursive CTEs for tracking polymorphic algorithm lineages.
 2. **NoSQL Graph Database (Neo4j & Cypher)**: Graph-native relationship storage to compute 1-to-3 hop lateral threat blast radii and node quarantine status.
 3. **Multidimensional Vector Database**: 5D normalized metric space ($\vec{v} = [IPC, CacheMiss, BranchMispred, PeakMem, Duration]$) executing sub-millisecond Cosine Similarity and k-NN retrieval for zero-day malware detection against golden baselines.
 4. **Next.js Fullstack Dashboard**: Real-time interactive UI with role-based access control (`sec_admin` vs `sec_analyst`), live SQL query runner, vector sliders, and graph visualizer.
@@ -28,17 +28,17 @@ In accordance with course requirements, the project was designed, implemented, a
 
 #### 👤 Sanyam Deven Hiran (PES2UG24CS446)
 - **Domain Problem Formulation & Mathematical Modeling:** Hardware counter metric distributions across 5 architectural archetypes.
-- **Entity-Relationship (ER) & Relational Schema Mapping:** 7-entity ER model and relational schema mapping (`report_assets/er_diagram.png`, `report_assets/schema_diagram.png`).
-- **Core MySQL DDL & Relational Constraints:** DDL table definitions with strict 1:1 run-to-fingerprint cardinality and database-level RBAC (`schema_ddl.sql`, `truncate_tables.sql`).
-- **Advanced Stored Procedures, Functions & Triggers:** Stored procedure `GetRunFingerprintProfile`, deterministic function `CalculateIPCDeviation`, validation triggers, threat auto-mitigation triggers, and security view `vw_critical_security_anomalies` (`procedures_and_triggers.sql`).
-- **Multidimensional Vector Database Engine:** 5D continuous telemetry metric space with Cosine Similarity and k-NN retrieval (`vector_db.py`, `vector_store.json`).
-- **Backend REST API Framework:** FastAPI backend core endpoints and RBAC authentication gating (`api_server.py`).
+- **Entity-Relationship (ER) & Relational Schema Mapping:** 7-entity ER model and relational schema mapping (`docs/architecture/er_diagram.png`, `docs/architecture/schema_diagram.png`).
+- **Core MySQL DDL & Relational Constraints:** DDL table definitions with strict 1:1 run-to-fingerprint cardinality and database-level RBAC (`database/schema/schema_ddl.sql`, `database/schema/truncate_tables.sql`).
+- **Advanced Stored Procedures, Functions & Triggers:** Stored procedure `GetRunFingerprintProfile`, deterministic function `CalculateIPCDeviation`, validation triggers, threat auto-mitigation triggers, and security view `vw_critical_security_anomalies` (`database/schema/procedures_and_triggers.sql`).
+- **Multidimensional Vector Database Engine:** 5D continuous telemetry metric space with Cosine Similarity and k-NN retrieval (`backend/vector_db.py`, `backend/vector_store.json`).
+- **Backend REST API Framework:** FastAPI backend core endpoints and RBAC authentication gating (`backend/api_server.py`).
 
 #### 👤 Shashank A (PES2UG24CS461)
-- **Synthetic Telemetry Ingestion Pipeline:** High-throughput data generation engine using Faker and NumPy modeling 5 realistic microarchitectural archetypes (`generate_synthetic_data.py`).
-- **Database Loaders & Ingestion Tooling:** Batched transactional SQL inserter (`insert_to_db.py`, `algo_fingerprint_data.sql`), high-speed `LOAD DATA INFILE` pipeline (`load_csv.sql`), and schema reset/populate workflow (`reset_and_populate.py`, `DATASET_GUIDE.md`).
-- **Relational Analytical SQL Suite:** Formulated complex multi-table joins, correlated subqueries, nested queries, ACID transactions, and recursive CTEs for polymorphic algorithm mutation tracking (`analytical_queries.sql`).
-- **NoSQL Graph Database Integration:** Neo4j Cypher engine with in-memory graph fallback, lateral infection pathways, multi-hop threat blast-radius traversals, and node quarantine (`graph_db.py`, API graph endpoints in `api_server.py`).
+- **Synthetic Telemetry Ingestion Pipeline:** High-throughput data generation engine using Faker and NumPy modeling 5 realistic microarchitectural archetypes (`backend/generate_synthetic_data.py`).
+- **Database Loaders & Ingestion Tooling:** Batched transactional SQL inserter (`backend/insert_to_db.py`, `database/seed_data/algo_fingerprint_data.sql`), high-speed `LOAD DATA INFILE` pipeline (`database/seed_data/load_csv.sql`), and schema reset/populate workflow (`backend/reset_and_populate.py`, `database/seed_data/DATASET_GUIDE.md`).
+- **Relational Analytical SQL Suite:** Formulated complex multi-table joins, correlated subqueries, nested queries, ACID transactions, and recursive CTEs for polymorphic algorithm mutation tracking (`database/queries/analytical_queries.sql`).
+- **NoSQL Graph Database Integration:** Neo4j Cypher engine with in-memory graph fallback, lateral infection pathways, multi-hop threat blast-radius traversals, and node quarantine (`backend/graph_db.py`, API graph endpoints in `backend/api_server.py`).
 - **Fullstack Next.js Frontend Dashboard:** Modern interactive dashboard using Next.js 16 (App Router), TypeScript, and Tailwind CSS with live telemetry metrics, threat monitor, interactive query runner, and vector similarity explorer (`frontend/`).
 
 ---
@@ -47,31 +47,39 @@ In accordance with course requirements, the project was designed, implemented, a
 
 ```text
 DBMS-Mini-Project/
-├── schema_ddl.sql                  # Core MySQL DDL schema and RBAC roles
-├── procedures_and_triggers.sql     # Stored procedures, deterministic functions, and triggers
-├── analytical_queries.sql          # Advanced SQL queries, joins, subqueries, and CTEs
-├── truncate_tables.sql             # Schema cleanup and table truncation utility
+├── backend/                        # High-performance Python backend & multi-model engines
+│   ├── api_server.py               # FastAPI REST service connecting MySQL, Graph & Vector
+│   ├── vector_db.py                # 5D Vector database engine & k-NN cosine similarity
+│   ├── graph_db.py                 # Neo4j Cypher graph engine & threat blast radius
+│   ├── generate_synthetic_data.py  # Faker & NumPy telemetry dataset generator
+│   ├── reset_and_populate.py       # Automated schema reset and topological data population
+│   ├── insert_to_db.py             # Transactional batch SQL loader
+│   └── vector_store.json           # Seeded vector embeddings database
 │
-├── generate_synthetic_data.py      # Faker & NumPy telemetry dataset generator
-├── reset_and_populate.py           # Automated reset and topological data population
-├── insert_to_db.py                 # Transactional batch SQL loader
-├── load_csv.sql                    # High-speed LOAD DATA LOCAL INFILE script
-├── algo_fingerprint_data.sql       # Seed dataset (17,000+ batched statements)
-├── DATASET_GUIDE.md                # Comprehensive synthetic dataset & archetype guide
-├── csv_data/                       # Raw generated CSV tables
-│
-├── vector_db.py                    # 5D Vector database engine & k-NN cosine matcher
-├── vector_store.json               # Seeded vector embeddings database
-├── graph_db.py                     # Neo4j Cypher graph engine & threat blast radius
-├── api_server.py                   # FastAPI REST backend connecting MySQL, Graph & Vector
+├── database/                       # Relational schema, seed data, and analytical queries
+│   ├── schema/                     # DDL table specifications, procedures, views, and triggers
+│   │   ├── schema_ddl.sql          # Core table definitions, constraints, and RBAC roles
+│   │   ├── procedures_and_triggers.sql # Stored procedures, functions, and audit triggers
+│   │   └── truncate_tables.sql     # Safe table truncation utility
+│   ├── queries/                    # Advanced relational queries and query evaluation
+│   │   └── analytical_queries.sql  # Multi-table joins, subqueries, ACID tests, and recursive CTEs
+│   └── seed_data/                  # Seed dataset artifacts and bulk loading scripts
+│       ├── algo_fingerprint_data.sql # Seed SQL script (17,000+ batched insert statements)
+│       ├── load_csv.sql            # High-speed LOAD DATA LOCAL INFILE script
+│       ├── DATASET_GUIDE.md        # Comprehensive synthetic dataset & archetype guide
+│       └── csv_data/               # Raw generated CSV tables
 │
 ├── frontend/                       # Next.js 16 fullstack cybersecurity dashboard
-│   ├── app/                        # App router components and pages
-│   ├── public/                     # Static assets
+│   ├── app/                        # Next.js App Router components, layout, and views
+│   ├── public/                     # Static UI assets
 │   ├── package.json
 │   └── tsconfig.json
 │
-└── report_assets/                  # High-resolution ER and Relational Schema diagrams
+└── docs/                           # Architecture diagrams and system design specifications
+    └── architecture/
+        ├── er_diagram.png          # 7-entity Crow's foot ER diagram
+        ├── schema_diagram.png      # Relational schema mapping with foreign key dependencies
+        └── pes_logo.png            # PES University academic emblem
 ```
 
 ---
@@ -84,20 +92,21 @@ DBMS-Mini-Project/
 - **MySQL 8.0+** running on `localhost:3306`
 
 ### 2. Database Setup (MySQL 8.0+)
-Open MySQL and execute:
+Open your MySQL terminal and execute:
 ```sql
-SOURCE schema_ddl.sql;
-SOURCE procedures_and_triggers.sql;
+SOURCE database/schema/schema_ddl.sql;
+SOURCE database/schema/procedures_and_triggers.sql;
 ```
 
 To populate the complete dataset:
 ```powershell
-python reset_and_populate.py
+python backend/reset_and_populate.py
 ```
-*(Or use `python insert_to_db.py` to ingest `algo_fingerprint_data.sql`)*
+*(Alternatively, use `python backend/insert_to_db.py` to ingest the SQL seed dump directly)*
 
 ### 3. Start Backend API Service
 ```powershell
+cd backend
 python api_server.py
 ```
 - API live at: `http://localhost:8000`
@@ -113,6 +122,6 @@ npm run dev
 
 ### 5. Execute Analytical SQL Queries
 ```powershell
-# Open MySQL client and run:
-mysql -u root -p algo_fingerprint_db < analytical_queries.sql
+# Open MySQL client and execute the analytical query suite:
+mysql -u root -p algo_fingerprint_db < database/queries/analytical_queries.sql
 ```
