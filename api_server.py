@@ -215,7 +215,7 @@ def get_dashboard_stats():
                 "alert_distribution": alert_dist,
                 "architecture_distribution": arch_dist,
                 "vector_db_size": len(vector_db.vectors),
-                "graph_entities": len(threat_graph.fallback.nodes)
+                "graph_entities": len(threat_graph.fallback.nodes) if threat_graph else 0
             }
     finally:
         conn.close()
