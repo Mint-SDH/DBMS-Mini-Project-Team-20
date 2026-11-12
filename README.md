@@ -4,74 +4,119 @@
 **Department of Computer Science & Engineering | PES University, Bengaluru**  
 **Academic Semester:** AUG – DEC 2026 (5th Semester)  
 **Team (Group 20):**  
-- **Sanyam Deven Hiran** (PES2UG24CS446) — *Lead Contributor (This Repository)*  
-- **Shashank A** (PES2UG24CS461) — *Teammate (Data Generation, Graph DB, Frontend)*  
+- **Sanyam Deven Hiran** (PES2UG24CS446)  
+- **Shashank A** (PES2UG24CS461)  
 **Faculty Guide:** Dr. Shilpa S, Assistant Professor  
 
 ---
 
 ## 📌 Project Overview & Team Division of Work
 
-This project implements a multi-model database security platform tracking low-level CPU Hardware Performance Counters (HPCs)—including **Instructions Per Cycle (IPC)**, **Cache Miss Rates**, **Branch Mispredictions**, and **Memory Footprints**—to detect zero-day cryptojacking malware and rogue processes.
+ExecutionGuard is a multi-model database security platform tracking low-level CPU Hardware Performance Counters (HPCs)—including **Instructions Per Cycle (IPC)**, **Cache Miss Rates**, **Branch Mispredictions**, and **Memory Footprints**—to detect zero-day cryptojacking malware and rogue processes.
 
-In accordance with the 2-member project distribution requirements, the implementation is partitioned into two halves:
-
-### 👤 Part A: Sanyam Deven Hiran (PES2UG24CS446) — [Pushed to this Repository]
-1. **Domain Problem Formulation & Mathematical Modeling:** Hardware counter metric distributions across 5 architectural archetypes.
-2. **Entity-Relationship (ER) & Relational Schema Mapping:**
-   - [`report_assets/er_diagram.png`](report_assets/er_diagram.png): 7-entity ER model with $1:1$, $1:N$, and $M:N$ cardinalities.
-   - [`report_assets/schema_diagram.png`](report_assets/schema_diagram.png): Complete relational schema mapping with foreign key dependencies.
-3. **Core MySQL DDL & Relational Constraints:**
-   - [`schema_ddl.sql`](schema_ddl.sql): Complete DDL table definitions with primary keys, cascading foreign keys, and strict **1:1** cardinality (`FINGERPRINT.run_id UNIQUE`).
-   - Database-level Role-Based Access Control (`sec_admin` and `sec_analyst`).
-   - [`truncate_tables.sql`](truncate_tables.sql): Clean schema reset utility.
-4. **Advanced Stored Procedures, Functions & Automated Triggers:**
-   - [`procedures_and_triggers.sql`](procedures_and_triggers.sql):
-     - Stored Procedure `GetRunFingerprintProfile(p_run_id)`
-     - Stored Deterministic Function `CalculateIPCDeviation(p_fingerprint_id)`
-     - Trigger `trg_validate_fingerprint_bounds` (BEFORE INSERT on `FINGERPRINT`)
-     - Trigger `trg_auto_terminate_critical_threat` (AFTER INSERT on `DETECTION_LOG` for automated threat mitigation)
-     - Relational Security Audit View `vw_critical_security_anomalies`
-5. **Multidimensional Vector Database Engine:**
-   - [`vector_db.py`](vector_db.py) & [`vector_store.json`](vector_store.json): 5D continuous telemetry metric space ($\vec{v} = [IPC, CacheMiss, BranchMispred, PeakMem, Duration]$) utilizing **Cosine Similarity** and **k-NN retrieval** for zero-day malware detection against golden baselines with complete Vector RUD (Read/Search, Update, Delete).
-6. **Backend REST API Service:**
-   - [`api_server.py`](api_server.py): FastAPI backend providing relational query execution, RBAC authentication gating, and vector similarity search.
-7. **Official Academic Documentation & PDF Compiler:**
-   - [`generate_final_report_pdf.py`](generate_final_report_pdf.py): ReportLab PDF generation script.
-   - [`PES2UG24CS446_PES2UG24CS461_Final_Report.pdf`](PES2UG24CS446_PES2UG24CS461_Final_Report.pdf): 17-page formal PES University academic report.
-   - [`REPORT.md`](REPORT.md): Comprehensive Markdown documentation covering all 16 chapters.
+The project combines:
+1. **Relational Core (MySQL 8.0+)**: Strongly-typed schema, 1:1 run-to-fingerprint cardinality, automated threat mitigation triggers, stored procedures, deterministic functions, and recursive CTEs.
+2. **NoSQL Graph Database (Neo4j & Cypher)**: Graph-native relationship storage to compute 1-to-3 hop lateral threat blast radii and node quarantine status.
+3. **Multidimensional Vector Database**: 5D normalized metric space ($\vec{v} = [IPC, CacheMiss, BranchMispred, PeakMem, Duration]$) executing Cosine Similarity and k-NN retrieval for zero-day malware detection.
+4. **Next.js Fullstack Dashboard**: Real-time interactive UI with role-based access control (`sec_admin` vs `sec_analyst`), live SQL query runner, vector sliders, and graph visualizer.
 
 ---
 
-### 👤 Part B: Shashank A (PES2UG24CS461) — [To be Merged by Teammate]
-1. **Synthetic Telemetry Ingestion Pipeline:** Faker & NumPy data generator (`generate_synthetic_data.py`), database population scripts (`reset_and_populate.py`, `insert_to_db.py`, `load_csv.sql`), and raw CSV tables (`csv_data/`).
-2. **NoSQL Graph Database Integration:** Neo4j Cypher engine (`graph_db.py`), lateral infection pathways, and multi-hop threat blast-radius traversals.
-3. **Frontend User Interface:** Modern Next.js application (`frontend/`) with Tailwind CSS, telemetry dashboards, interactive vector sliders, and query runner.
-4. **Relational Analytical Queries:** Complex multi-table joins, correlated subqueries, and recursive CTE tests.
+### 👥 Team Contributions & Module Division
+
+In accordance with course requirements, the project was designed, implemented, and integrated collaboratively:
+
+#### 👤 Sanyam Deven Hiran (PES2UG24CS446)
+- **Domain Problem Formulation & Mathematical Modeling:** Hardware counter metric distributions across 5 architectural archetypes.
+- **Entity-Relationship (ER) & Relational Schema Mapping:** 7-entity ER model and relational schema mapping (`report_assets/er_diagram.png`, `report_assets/schema_diagram.png`).
+- **Core MySQL DDL & Relational Constraints:** DDL table definitions with strict 1:1 run-to-fingerprint cardinality and database-level RBAC (`schema_ddl.sql`, `truncate_tables.sql`).
+- **Advanced Stored Procedures, Functions & Triggers:** Stored procedure `GetRunFingerprintProfile`, deterministic function `CalculateIPCDeviation`, validation triggers, threat auto-mitigation triggers, and security view `vw_critical_security_anomalies` (`procedures_and_triggers.sql`).
+- **Multidimensional Vector Database Engine:** 5D continuous telemetry metric space with Cosine Similarity and k-NN retrieval (`vector_db.py`, `vector_store.json`).
+- **Backend REST API Framework:** FastAPI backend core endpoints and RBAC authentication gating (`api_server.py`).
+- **Academic Documentation:** ReportLab PDF compilation script and formal PES University academic report (`generate_final_report_pdf.py`, `PES2UG24CS446_PES2UG24CS461_Final_Report.pdf`, `REPORT.md`).
+
+#### 👤 Shashank A (PES2UG24CS461)
+- **Synthetic Telemetry Ingestion Pipeline:** High-throughput data generation engine using Faker and NumPy modeling 5 realistic microarchitectural archetypes (`generate_synthetic_data.py`).
+- **Database Loaders & Ingestion Tooling:** Batched transactional SQL inserter (`insert_to_db.py`, `algo_fingerprint_data.sql`), high-speed `LOAD DATA INFILE` pipeline (`load_csv.sql`), and schema reset/populate workflow (`reset_and_populate.py`, `DATASET_GUIDE.md`).
+- **Relational Analytical SQL Suite:** Formulated complex multi-table joins, correlated subqueries, nested queries, ACID transactions, and recursive CTEs for polymorphic algorithm mutation tracking (`analytical_queries.sql`).
+- **NoSQL Graph Database Integration:** Neo4j Cypher engine with in-memory graph fallback, lateral infection pathways, multi-hop threat blast-radius traversals, and node quarantine (`graph_db.py`, API graph endpoints in `api_server.py`).
+- **Fullstack Next.js Frontend Dashboard:** Modern interactive dashboard using Next.js 16 (App Router), TypeScript, and Tailwind CSS with live telemetry metrics, threat monitor, interactive query runner, and vector similarity explorer (`frontend/`).
 
 ---
 
-## 🚀 How to Run Sanyam's Modules
+## 🏗️ Repository Structure
 
-### 1. Database Setup (MySQL 8.0+)
+```text
+DBMS-Mini-Project/
+├── schema_ddl.sql                  # Core MySQL DDL schema and RBAC roles
+├── procedures_and_triggers.sql     # Stored procedures, deterministic functions, and triggers
+├── analytical_queries.sql          # Advanced SQL queries, joins, subqueries, and CTEs
+├── truncate_tables.sql             # Schema cleanup and table truncation utility
+│
+├── generate_synthetic_data.py      # Faker & NumPy telemetry dataset generator
+├── reset_and_populate.py           # Automated reset and topological data population
+├── insert_to_db.py                 # Transactional batch SQL loader
+├── load_csv.sql                    # High-speed LOAD DATA LOCAL INFILE script
+├── algo_fingerprint_data.sql       # Seed dataset (17,000+ batched statements)
+├── DATASET_GUIDE.md                # Comprehensive synthetic dataset & archetype guide
+├── csv_data/                       # Raw generated CSV tables
+│
+├── vector_db.py                    # 5D Vector database engine & k-NN cosine matcher
+├── vector_store.json               # Seeded vector embeddings database
+├── graph_db.py                     # Neo4j Cypher graph engine & threat blast radius
+├── api_server.py                   # FastAPI REST backend connecting MySQL, Graph & Vector
+│
+├── frontend/                       # Next.js 16 fullstack cybersecurity dashboard
+│   ├── app/                        # App router components and pages
+│   ├── public/                     # Static assets
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── report_assets/                  # High-resolution ER and Relational Schema diagrams
+├── REPORT.md                       # Comprehensive 16-chapter academic project report
+├── generate_final_report_pdf.py    # ReportLab automated PDF report generator
+└── PES2UG24CS446_PES2UG24CS461_Final_Report.pdf  # Formal compiled academic report
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- **Python 3.10+**
+- **Node.js v18+ & npm**
+- **MySQL 8.0+** running on `localhost:3306`
+
+### 2. Database Setup (MySQL 8.0+)
+Open MySQL and execute:
 ```sql
 SOURCE schema_ddl.sql;
 SOURCE procedures_and_triggers.sql;
 ```
 
-### 2. Vector Database k-NN Anomaly Matcher
+To populate the complete dataset:
 ```powershell
-python vector_db.py
+python reset_and_populate.py
 ```
+*(Or use `python insert_to_db.py` to ingest `algo_fingerprint_data.sql`)*
 
-### 3. FastAPI Backend Service
+### 3. Start Backend API Service
 ```powershell
 python api_server.py
 ```
-*Live at:* `http://localhost:8000` (Swagger docs at `http://localhost:8000/docs`)
+- API live at: `http://localhost:8000`
+- Interactive Swagger docs: `http://localhost:8000/docs`
 
-### 4. Compile Academic Report PDF
+### 4. Start Next.js Frontend Dashboard
+In a separate terminal:
 ```powershell
-python generate_final_report_pdf.py
+cd frontend
+npm run dev
 ```
-Outputs the official PES University report: `PES2UG24CS446_PES2UG24CS461_Final_Report.pdf`.
+- Open browser at: `http://localhost:3000`
+
+### 5. Execute Analytical SQL Queries
+```powershell
+# Open MySQL client and run:
+mysql -u root -p algo_fingerprint_db < analytical_queries.sql
+```

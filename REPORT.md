@@ -1010,7 +1010,7 @@ mini_project/
 └── generate_final_report_pdf.py  # ReportLab PDF compiler
 ```
 
-**Official GitHub Repository:** [https://github.com/Mint-SDH/DBMS-Mini-Project](https://github.com/Mint-SDH/DBMS-Mini-Project)
+**Official GitHub Repository:** [https://github.com/Mint-SDH/DBMS-Mini-Project-Team-20](https://github.com/Mint-SDH/DBMS-Mini-Project-Team-20)
 
 ---
 
