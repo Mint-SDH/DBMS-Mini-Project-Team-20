@@ -10,19 +10,19 @@
 
 ---
 
-## 📌 Project Overview & Team Division of Work
+## 📌 Project Overview & Architecture
 
-ExecutionGuard is a multi-model database security platform tracking low-level CPU Hardware Performance Counters (HPCs)—including **Instructions Per Cycle (IPC)**, **Cache Miss Rates**, **Branch Mispredictions**, and **Memory Footprints**—to detect zero-day cryptojacking malware and rogue processes.
+**ExecutionGuard** is a multi-model database security platform that tracks low-level CPU Hardware Performance Counters (HPCs)—including **Instructions Per Cycle (IPC)**, **Cache Miss Rates**, **Branch Mispredictions**, and **Memory Footprints**—to detect zero-day cryptojacking malware and rogue processes.
 
-The project combines:
-1. **Relational Core (MySQL 8.0+)**: Strongly-typed schema, 1:1 run-to-fingerprint cardinality, automated threat mitigation triggers, stored procedures, deterministic functions, and recursive CTEs.
+The system combines:
+1. **Relational Core (MySQL 8.0+)**: Strongly-typed schema across 7 entities, 1:1 run-to-fingerprint cardinality, automated threat mitigation triggers, stored procedures, deterministic functions, and recursive CTEs for tracking polymorphic algorithm lineages.
 2. **NoSQL Graph Database (Neo4j & Cypher)**: Graph-native relationship storage to compute 1-to-3 hop lateral threat blast radii and node quarantine status.
-3. **Multidimensional Vector Database**: 5D normalized metric space ($\vec{v} = [IPC, CacheMiss, BranchMispred, PeakMem, Duration]$) executing Cosine Similarity and k-NN retrieval for zero-day malware detection.
+3. **Multidimensional Vector Database**: 5D normalized metric space ($\vec{v} = [IPC, CacheMiss, BranchMispred, PeakMem, Duration]$) executing sub-millisecond Cosine Similarity and k-NN retrieval for zero-day malware detection against golden baselines.
 4. **Next.js Fullstack Dashboard**: Real-time interactive UI with role-based access control (`sec_admin` vs `sec_analyst`), live SQL query runner, vector sliders, and graph visualizer.
 
 ---
 
-### 👥 Team Contributions & Module Division
+### 👥 Team Division of Work
 
 In accordance with course requirements, the project was designed, implemented, and integrated collaboratively:
 
@@ -33,7 +33,6 @@ In accordance with course requirements, the project was designed, implemented, a
 - **Advanced Stored Procedures, Functions & Triggers:** Stored procedure `GetRunFingerprintProfile`, deterministic function `CalculateIPCDeviation`, validation triggers, threat auto-mitigation triggers, and security view `vw_critical_security_anomalies` (`procedures_and_triggers.sql`).
 - **Multidimensional Vector Database Engine:** 5D continuous telemetry metric space with Cosine Similarity and k-NN retrieval (`vector_db.py`, `vector_store.json`).
 - **Backend REST API Framework:** FastAPI backend core endpoints and RBAC authentication gating (`api_server.py`).
-- **Academic Documentation:** ReportLab PDF compilation script and formal PES University academic report (`generate_final_report_pdf.py`, `PES2UG24CS446_PES2UG24CS461_Final_Report.pdf`, `REPORT.md`).
 
 #### 👤 Shashank A (PES2UG24CS461)
 - **Synthetic Telemetry Ingestion Pipeline:** High-throughput data generation engine using Faker and NumPy modeling 5 realistic microarchitectural archetypes (`generate_synthetic_data.py`).
@@ -72,10 +71,7 @@ DBMS-Mini-Project/
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── report_assets/                  # High-resolution ER and Relational Schema diagrams
-├── REPORT.md                       # Comprehensive 16-chapter academic project report
-├── generate_final_report_pdf.py    # ReportLab automated PDF report generator
-└── PES2UG24CS446_PES2UG24CS461_Final_Report.pdf  # Formal compiled academic report
+└── report_assets/                  # High-resolution ER and Relational Schema diagrams
 ```
 
 ---

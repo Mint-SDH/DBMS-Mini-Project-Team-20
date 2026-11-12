@@ -14,7 +14,11 @@ extracted_img/
 .env
 .env.local
 
+# Academic reports & local documentation drafts
+*.pdf
+generate_final_report_pdf.py
+REPORT.md
+
 # Operating System
 Thumbs.db
 .DS_Store
-
