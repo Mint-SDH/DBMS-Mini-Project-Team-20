@@ -43,7 +43,7 @@ app.add_middleware(
 # Configuration
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASS = os.getenv("MYSQL_PASS", "Mint@123")
+MYSQL_PASS = os.getenv("MYSQL_PASS", "Marty@66")
 MYSQL_DB = os.getenv("MYSQL_DB", "algo_fingerprint_db")
 MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
 
@@ -228,10 +228,19 @@ def get_critical_anomalies(limit: int = 25, offset: int = 0):
         with conn.cursor() as cur:
             cur.execute(f"""
                 SELECT 
-                    detection_id, run_id, algo_name, developer_name, team, hostname,
-                    detected_threat_signature, similarity_score, alert_level,
-                    classification_result, signature_hash
-                FROM vw_critical_security_anomalies
+                    dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
+                    cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
+                    dl.alert_level, dl.classification_result, fp.signature_hash,
+                    fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb
+                FROM detection_log dl
+                JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
+                JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
+                JOIN execution_run er ON fp.run_id = er.run_id
+                JOIN algorithm a ON er.algo_id = a.algo_id
+                JOIN developer d ON a.dev_id = d.dev_id
+                JOIN compute_node cn ON er.node_id = cn.node_id
+                WHERE dl.alert_level IN ('Critical', 'High')
+                ORDER BY dl.similarity_score DESC
                 LIMIT {limit} OFFSET {offset};
             """)
             records = cur.fetchall()
