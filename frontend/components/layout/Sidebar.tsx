@@ -29,12 +29,12 @@ export function Sidebar({ activeTab, setActiveTab, role, threatsCount }: Sidebar
     { id: "threats", label: "Threat Audit Log", icon: AlertTriangle, count: threatsCount ? `${threatsCount}` : "15" },
     { id: "sql", label: "SQL & Query Runner", icon: Terminal, count: "ACID" },
     { id: "graph", label: "Threat Blast Radius", icon: Share2, count: "Neo4j" },
-    { id: "vector", label: "Vector k-NN Matcher", icon: Binary, count: "5D Space" },
+    { id: "vector", label: "Vector k-NN", icon: Binary, count: "5D Space" },
     { id: "rubric", label: "Rubric Compliance", icon: Award, count: "46/46" },
   ];
 
   return (
-    <aside className="w-60 border-r border-[#262626] bg-[#141414] flex flex-col justify-between p-3 flex-shrink-0 select-none">
+    <aside className="w-64 border-r border-[#262626] bg-[#141414] flex flex-col justify-between p-3 flex-shrink-0 select-none">
       {/* Navigation Section */}
       <div className="space-y-4">
         <div className="px-2 pt-1 text-[11px] font-mono uppercase tracking-wider text-[#707070] font-semibold">
@@ -55,13 +55,13 @@ export function Sidebar({ activeTab, setActiveTab, role, threatsCount }: Sidebar
                     : "text-[#999999] hover:bg-[#1a1a1a] hover:text-[#ededed] border border-transparent"
                 }`}
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className={`w-4 h-4 ${isActive ? "text-[#3ecf8e]" : "text-[#707070]"}`} />
-                  <span>{item.label}</span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#3ecf8e]" : "text-[#707070]"}`} />
+                  <span className="truncate">{item.label}</span>
                 </div>
                 {item.count && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
+                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded border flex-shrink-0 ml-1.5 ${
                       isActive
                         ? "bg-[#1b2b23] text-[#3ecf8e] border-[#214332]"
                         : "bg-[#1f1f1f] text-[#707070] border-[#2a2a2a]"
@@ -101,3 +101,4 @@ export function Sidebar({ activeTab, setActiveTab, role, threatsCount }: Sidebar
     </aside>
   );
 }
+

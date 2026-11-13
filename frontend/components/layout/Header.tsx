@@ -50,13 +50,7 @@ export function Header({ role, setRole, onAlert }: HeaderProps) {
         {/* Role Toggle Button */}
         <div className="flex items-center bg-[#1f1f1f] border border-[#2e2e2e] rounded-lg p-0.5 text-xs font-mono">
           <button
-            onClick={() => {
-              setRole("sec_admin");
-              onAlert(
-                "info",
-                "Switched context to 'sec_admin' (Full DBA & SecOps Privileges: DDL, Quarantine, Mutation enabled)."
-              );
-            }}
+            onClick={() => setRole("sec_admin")}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
               role === "sec_admin"
                 ? "bg-[#2a2a2a] text-[#3ecf8e] font-semibold shadow-sm"
@@ -67,13 +61,7 @@ export function Header({ role, setRole, onAlert }: HeaderProps) {
             <span>sec_admin</span>
           </button>
           <button
-            onClick={() => {
-              setRole("sec_analyst");
-              onAlert(
-                "info",
-                "Switched context to 'sec_analyst' (Security Analyst: Read/Insert permitted, DDL/Quarantine restricted)."
-              );
-            }}
+            onClick={() => setRole("sec_analyst")}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
               role === "sec_analyst"
                 ? "bg-[#2a2a2a] text-[#3ecf8e] font-semibold shadow-sm"
@@ -94,3 +82,4 @@ export function Header({ role, setRole, onAlert }: HeaderProps) {
     </header>
   );
 }
+
