@@ -239,15 +239,19 @@ def get_critical_anomalies(limit: int = 15, offset: int = 0, severity: Optional[
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            where_clause = ""
-            if severity and severity.upper() != "ALL":
+            # By default this view targets Security Threats (Critical & High)
+            if severity and severity.upper() == "ALL":
+                where_clause = "WHERE dl.alert_level IN ('Critical', 'High')"
+            elif severity:
                 where_clause = f"WHERE dl.alert_level = '{severity}'"
+            else:
+                where_clause = "WHERE dl.alert_level IN ('Critical', 'High')"
 
-            # 1. Get total count for the filter
+            # 1. Total matching count
             cur.execute(f"SELECT COUNT(*) AS total FROM detection_log dl {where_clause};")
             total_records = cur.fetchone()["total"]
 
-            # 2. Query paginated records
+            # 2. Query paginated records sorted by similarity descending
             query = f"""
                 SELECT 
                     dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
@@ -263,7 +267,7 @@ def get_critical_anomalies(limit: int = 15, offset: int = 0, severity: Optional[
                 JOIN developer d ON a.dev_id = d.dev_id
                 JOIN compute_node cn ON er.node_id = cn.node_id
                 {where_clause}
-                ORDER BY dl.detection_id DESC
+                ORDER BY dl.similarity_score DESC
                 LIMIT {limit} OFFSET {offset};
             """
 

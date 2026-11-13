@@ -117,12 +117,9 @@ export function ThreatsView({
             }}
             className="bg-[#171717] border border-[#2a2a2a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#3ecf8e] font-mono"
           >
-            <option value="ALL">All Severities (9,078 Total)</option>
-            <option value="Critical">Critical (827 Auto-Terminated)</option>
-            <option value="High">High (889 Threats)</option>
-            <option value="Medium">Medium (2,826 Drift)</option>
-            <option value="Low">Low (1,860 Minor)</option>
-            <option value="Info">Info (2,676 Verified Safe)</option>
+            <option value="ALL">All Threats (1,716 Critical & High)</option>
+            <option value="Critical">Critical Threats (827 Auto-Terminated)</option>
+            <option value="High">High Threats (889 Rogue Recon)</option>
           </select>
         </div>
       </div>
