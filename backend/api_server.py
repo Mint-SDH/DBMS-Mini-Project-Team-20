@@ -222,16 +222,21 @@ def get_dashboard_stats():
 
 
 @app.get("/api/anomalies/critical")
-def get_critical_anomalies(limit: int = 25, offset: int = 0):
+def get_critical_anomalies(limit: int = 50, offset: int = 0, severity: Optional[str] = None):
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
+            where_clause = "WHERE 1=1"
+            if severity and severity.upper() != "ALL":
+                where_clause += f" AND dl.alert_level = '{severity}'"
+
             cur.execute(f"""
                 SELECT 
                     dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
                     cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
                     dl.alert_level, dl.classification_result, fp.signature_hash,
-                    fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb
+                    fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
+                    er.execution_status
                 FROM detection_log dl
                 JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
                 JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
@@ -239,7 +244,7 @@ def get_critical_anomalies(limit: int = 25, offset: int = 0):
                 JOIN algorithm a ON er.algo_id = a.algo_id
                 JOIN developer d ON a.dev_id = d.dev_id
                 JOIN compute_node cn ON er.node_id = cn.node_id
-                WHERE dl.alert_level IN ('Critical', 'High')
+                {where_clause}
                 ORDER BY dl.similarity_score DESC
                 LIMIT {limit} OFFSET {offset};
             """)

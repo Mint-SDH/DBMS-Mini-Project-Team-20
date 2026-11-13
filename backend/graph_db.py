@@ -162,7 +162,7 @@ class ThreatGraphDB:
         if self.driver:
             self.driver.close()
 
-    def sync_from_mysql(self, mysql_host="localhost", mysql_user="root", mysql_password="Mint@123", db_name="algo_fingerprint_db", limit=1000):
+    def sync_from_mysql(self, mysql_host="localhost", mysql_user="root", mysql_password="Marty@66", db_name="algo_fingerprint_db", limit=1000):
         """Populates the graph database from MySQL relational tables."""
         print(f"[ThreatGraph] Syncing MySQL '{db_name}' data into Graph schema...")
         conn = pymysql.connect(host=mysql_host, user=mysql_user, password=mysql_password, database=db_name)

@@ -30,7 +30,7 @@ export default function Home() {
     try {
       const [statsRes, threatsRes] = await Promise.all([
         fetch(`${API_BASE}/dashboard/stats`),
-        fetch(`${API_BASE}/anomalies/critical?limit=15`),
+        fetch(`${API_BASE}/anomalies/critical?limit=100`),
       ]);
 
       if (statsRes.ok) {

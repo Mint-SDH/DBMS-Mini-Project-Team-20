@@ -70,9 +70,12 @@ export function ThreatsView({
             onChange={(e) => setSelectedSeverity(e.target.value)}
             className="bg-[#171717] border border-[#2a2a2a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#3ecf8e] font-mono"
           >
-            <option value="ALL">All Severities</option>
-            <option value="Critical">Critical</option>
+            <option value="ALL">All Severities (All Logs)</option>
+            <option value="Critical">Critical (Terminated)</option>
             <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+            <option value="Info">Info (Safe)</option>
           </select>
         </div>
       </div>
@@ -90,6 +93,7 @@ export function ThreatsView({
                 <th className="py-2.5 px-4">Hardware Telemetry</th>
                 <th className="py-2.5 px-4">Threat Signature</th>
                 <th className="py-2.5 px-4">Similarity</th>
+                <th className="py-2.5 px-4">DB Trigger Status</th>
                 <th className="py-2.5 px-4">Mitigation</th>
               </tr>
             </thead>
@@ -97,6 +101,7 @@ export function ThreatsView({
               {filteredThreats.length > 0 ? (
                 filteredThreats.map((row, idx) => {
                   const isQuarantined = quarantinedNodes.has(row.node_id);
+                  const isTerminated = row.execution_status?.toLowerCase() === "terminated" || row.alert_level === "Critical";
                   return (
                     <tr
                       key={idx}
@@ -137,6 +142,17 @@ export function ThreatsView({
                       <td className="py-3 px-4 font-mono font-bold text-[#f87171]">
                         {row.similarity_score}%
                       </td>
+                      <td className="py-3 px-4 font-mono">
+                        {isTerminated ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#331111] text-[#f87171] border border-[#552020]">
+                            Auto-Terminated
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#102a1d] text-[#3ecf8e] border border-[#1b4d36]">
+                            Active / Monitored
+                          </span>
+                        )}
+                      </td>
                       <td className="py-3 px-4">
                         <button
                           onClick={() => onQuarantineNode(row.node_id || idx + 1, row.hostname)}
@@ -148,7 +164,7 @@ export function ThreatsView({
                           }`}
                         >
                           <ShieldAlert className="w-3 h-3" />
-                          <span>{isQuarantined ? "Quarantined" : "Quarantine"}</span>
+                          <span>{isQuarantined ? "Quarantined" : "Quarantine Host"}</span>
                         </button>
                       </td>
                     </tr>

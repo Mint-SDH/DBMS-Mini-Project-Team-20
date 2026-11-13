@@ -32,6 +32,7 @@ export interface AnomalyRecord {
   cache_miss_rate?: number;
   branch_misprediction_rate?: number;
   peak_memory_mb?: number;
+  execution_status?: string;
 }
 
 export interface GraphNode {
