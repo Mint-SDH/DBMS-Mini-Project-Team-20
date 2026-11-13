@@ -132,6 +132,8 @@ export default function Home() {
               role={role}
               onQuarantineNode={handleQuarantineNode}
               quarantinedNodes={quarantinedNodes}
+              totalCritical={stats?.critical_threats}
+              totalHigh={stats?.high_threats}
             />
           )}
 

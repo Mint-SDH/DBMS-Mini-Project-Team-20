@@ -26,7 +26,7 @@ interface SidebarProps {
 export function Sidebar({ activeTab, setActiveTab, role, threatsCount }: SidebarProps) {
   const navItems: { id: TabType; label: string; icon: any; count?: string }[] = [
     { id: "dashboard", label: "Overview & Stats", icon: Activity },
-    { id: "threats", label: "Threat Audit Log", icon: AlertTriangle, count: threatsCount ? `${threatsCount}` : "15" },
+    { id: "threats", label: "Threat Audit Log", icon: AlertTriangle, count: "Relational" },
     { id: "sql", label: "SQL & Query Runner", icon: Terminal, count: "ACID" },
     { id: "graph", label: "Threat Blast Radius", icon: Share2, count: "Neo4j" },
     { id: "vector", label: "Vector k-NN", icon: Binary, count: "5D Space" },

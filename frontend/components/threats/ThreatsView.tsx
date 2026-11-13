@@ -17,6 +17,8 @@ interface ThreatsViewProps {
   role: RoleType;
   onQuarantineNode: (nodeId: number, hostname: string) => void;
   quarantinedNodes: Set<number>;
+  totalCritical?: number;
+  totalHigh?: number;
 }
 
 export function ThreatsView({
@@ -24,6 +26,8 @@ export function ThreatsView({
   role,
   onQuarantineNode,
   quarantinedNodes,
+  totalCritical,
+  totalHigh,
 }: ThreatsViewProps) {
   const [filterQuery, setFilterQuery] = useState("");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
@@ -39,6 +43,8 @@ export function ThreatsView({
     return matchesSearch && matchesSeverity;
   });
 
+  const totalThreatsInDb = (totalCritical || 0) + (totalHigh || 0);
+
   return (
     <div className="space-y-4">
       {/* View Header */}
@@ -48,12 +54,19 @@ export function ThreatsView({
             Threat Audit Log
           </h2>
           <p className="text-xs text-[#888888] mt-0.5">
-            Relational Security View: <code className="text-[#3ecf8e] font-mono">vw_critical_security_anomalies</code> (1,716 High & Critical anomalies)
+            Relational Security View: <code className="text-[#3ecf8e] font-mono">vw_critical_security_anomalies</code>
+            {totalThreatsInDb > 0 ? (
+              <span className="text-[#a0a0a0]"> ({totalThreatsInDb.toLocaleString()} active security anomalies in DB)</span>
+            ) : null}
           </p>
         </div>
 
         {/* Filter Controls */}
         <div className="flex items-center gap-2 text-xs">
+          <div className="text-xs font-mono text-[#808080] mr-1">
+            Showing <span className="text-white font-semibold">{filteredThreats.length}</span> of {threats.length} loaded
+          </div>
+
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#707070] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
@@ -70,12 +83,12 @@ export function ThreatsView({
             onChange={(e) => setSelectedSeverity(e.target.value)}
             className="bg-[#171717] border border-[#2a2a2a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#3ecf8e] font-mono"
           >
-            <option value="ALL">All Severities (All Logs)</option>
-            <option value="Critical">Critical (Terminated)</option>
+            <option value="ALL">All Severities</option>
+            <option value="Critical">Critical (Auto-Terminated)</option>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
-            <option value="Info">Info (Safe)</option>
+            <option value="Info">Info (Verified Safe)</option>
           </select>
         </div>
       </div>
