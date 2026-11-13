@@ -8,7 +8,6 @@ import { ThreatsView } from "@/components/threats/ThreatsView";
 import { SqlRunnerView } from "@/components/sql/SqlRunnerView";
 import { GraphView } from "@/components/graph/GraphView";
 import { VectorView } from "@/components/vector/VectorView";
-import { RubricView } from "@/components/rubric/RubricView";
 import { RoleType, SystemStats, AnomalyRecord, API_BASE } from "@/lib/constants";
 import { CheckCircle2, AlertTriangle, XCircle, Info } from "lucide-react";
 
@@ -142,8 +141,6 @@ export default function Home() {
           {activeTab === "graph" && <GraphView />}
 
           {activeTab === "vector" && <VectorView />}
-
-          {activeTab === "rubric" && <RubricView />}
         </main>
       </div>
     </div>

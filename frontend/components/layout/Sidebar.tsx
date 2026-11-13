@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { RoleType } from "@/lib/constants";
 
-export type TabType = "dashboard" | "threats" | "graph" | "vector" | "sql" | "rubric";
+export type TabType = "dashboard" | "threats" | "graph" | "vector" | "sql";
 
 interface SidebarProps {
   activeTab: TabType;
@@ -30,7 +30,6 @@ export function Sidebar({ activeTab, setActiveTab, role, threatsCount }: Sidebar
     { id: "sql", label: "SQL & Query Runner", icon: Terminal, count: "ACID" },
     { id: "graph", label: "Threat Blast Radius", icon: Share2, count: "Neo4j" },
     { id: "vector", label: "Vector k-NN", icon: Binary, count: "5D Space" },
-    { id: "rubric", label: "Rubric Compliance", icon: Award, count: "46/46" },
   ];
 
   return (
