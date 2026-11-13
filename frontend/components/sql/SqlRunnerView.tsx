@@ -216,3 +216,4 @@ export function SqlRunnerView({ role }: SqlRunnerViewProps) {
     </div>
   );
 }
+
