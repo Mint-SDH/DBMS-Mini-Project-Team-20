@@ -380,10 +380,18 @@ def get_advanced_query_samples():
 @app.post("/api/queries/run")
 def execute_custom_sql(req: SQLQueryRequest):
     """Executes arbitrary SQL queries with role gating."""
-    clean_query = req.query.strip()
+    raw_query = req.query.strip()
+    
+    # Strip leading SQL comments (-- and /* */) to accurately detect statement command type
+    lines = []
+    for line in raw_query.splitlines():
+        trimmed = line.strip()
+        if not trimmed.startswith("--") and not trimmed.startswith("#"):
+            lines.append(line)
+    clean_query = "\n".join(lines).strip()
     upper = clean_query.upper()
 
-    # RBAC Enforcement: sec_analyst cannot run DROP, ALTER, TRUNCATE, DELETE without where, etc.
+    # RBAC Enforcement: sec_analyst cannot run DROP, ALTER, TRUNCATE, GRANT, REVOKE, etc.
     if req.role == "sec_analyst":
         forbidden = ["DROP", "ALTER", "TRUNCATE", "GRANT", "REVOKE", "CREATE USER"]
         if any(upper.startswith(w) or f" {w} " in upper for w in forbidden):
@@ -396,7 +404,16 @@ def execute_custom_sql(req: SQLQueryRequest):
     try:
         with conn.cursor() as cur:
             cur.execute(clean_query)
-            if upper.startswith("SELECT") or upper.startswith("WITH") or upper.startswith("SHOW") or upper.startswith("DESC"):
+            
+            # If the query returns a result set (SELECT, WITH, SHOW, DESCRIBE, EXPLAIN, CALL)
+            if (
+                upper.startswith("SELECT")
+                or upper.startswith("WITH")
+                or upper.startswith("SHOW")
+                or upper.startswith("DESC")
+                or upper.startswith("EXPLAIN")
+                or upper.startswith("CALL")
+            ):
                 rows = cur.fetchall()
                 return {"type": "SELECT", "rows": rows, "count": len(rows)}
             else:
