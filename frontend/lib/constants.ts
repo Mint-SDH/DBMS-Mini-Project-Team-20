@@ -41,11 +41,19 @@ export interface GraphNode {
   properties: Record<string, any>;
 }
 
+export interface GraphEdge {
+  source: string;
+  target: string;
+  type: string;
+  properties?: Record<string, any>;
+}
+
 export interface GraphData {
   root_node: GraphNode;
   traversal_depth: number;
   total_compromised_nodes: number;
   nodes: GraphNode[];
+  edges?: GraphEdge[];
 }
 
 export interface VectorMatch {
