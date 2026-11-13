@@ -235,124 +235,41 @@ def get_dashboard_stats():
 
 
 @app.get("/api/anomalies/critical")
-def get_critical_anomalies(limit: int = 100, offset: int = 0, severity: Optional[str] = None):
+def get_critical_anomalies(limit: int = 15, offset: int = 0, severity: Optional[str] = None):
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
+            where_clause = ""
             if severity and severity.upper() != "ALL":
-                query = f"""
-                    SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = '{severity}'
-                    ORDER BY dl.similarity_score DESC
-                    LIMIT {limit} OFFSET {offset};
-                """
-            else:
-                # Balanced representation across all severity levels so every filter works smoothly
-                query = f"""
-                    (SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = 'Critical'
-                    ORDER BY dl.similarity_score DESC LIMIT 30)
+                where_clause = f"WHERE dl.alert_level = '{severity}'"
 
-                    UNION ALL
+            # 1. Get total count for the filter
+            cur.execute(f"SELECT COUNT(*) AS total FROM detection_log dl {where_clause};")
+            total_records = cur.fetchone()["total"]
 
-                    (SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = 'High'
-                    ORDER BY dl.similarity_score DESC LIMIT 25)
-
-                    UNION ALL
-
-                    (SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = 'Medium'
-                    ORDER BY dl.similarity_score DESC LIMIT 15)
-
-                    UNION ALL
-
-                    (SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = 'Low'
-                    ORDER BY dl.similarity_score DESC LIMIT 15)
-
-                    UNION ALL
-
-                    (SELECT 
-                        dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
-                        cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
-                        dl.alert_level, dl.classification_result, fp.signature_hash,
-                        fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
-                        er.execution_status
-                    FROM detection_log dl
-                    JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
-                    JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
-                    JOIN execution_run er ON fp.run_id = er.run_id
-                    JOIN algorithm a ON er.algo_id = a.algo_id
-                    JOIN developer d ON a.dev_id = d.dev_id
-                    JOIN compute_node cn ON er.node_id = cn.node_id
-                    WHERE dl.alert_level = 'Info'
-                    ORDER BY dl.similarity_score DESC LIMIT 15);
-                """
+            # 2. Query paginated records
+            query = f"""
+                SELECT 
+                    dl.detection_id, er.run_id, er.node_id, a.algo_name, d.name AS developer_name, d.team,
+                    cn.hostname, bp.pattern_name AS detected_threat_signature, dl.similarity_score,
+                    dl.alert_level, dl.classification_result, fp.signature_hash,
+                    fp.ipc_ratio, fp.cache_miss_rate, fp.branch_misprediction_rate, er.peak_memory_mb,
+                    er.execution_status
+                FROM detection_log dl
+                JOIN baseline_pattern bp ON dl.baseline_id = bp.baseline_id
+                JOIN fingerprint fp ON dl.fingerprint_id = fp.fingerprint_id
+                JOIN execution_run er ON fp.run_id = er.run_id
+                JOIN algorithm a ON er.algo_id = a.algo_id
+                JOIN developer d ON a.dev_id = d.dev_id
+                JOIN compute_node cn ON er.node_id = cn.node_id
+                {where_clause}
+                ORDER BY dl.detection_id DESC
+                LIMIT {limit} OFFSET {offset};
+            """
 
             cur.execute(query)
             records = cur.fetchall()
-            return {"count": len(records), "data": records}
+            return {"count": len(records), "total": total_records, "data": records}
     finally:
         conn.close()
 

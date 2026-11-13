@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AlertTriangle,
   ShieldAlert,
@@ -9,8 +9,10 @@ import {
   CheckCircle2,
   Lock,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
-import { AnomalyRecord, RoleType } from "@/lib/constants";
+import { AnomalyRecord, RoleType, API_BASE } from "@/lib/constants";
 
 interface ThreatsViewProps {
   threats: AnomalyRecord[];
@@ -22,7 +24,7 @@ interface ThreatsViewProps {
 }
 
 export function ThreatsView({
-  threats,
+  threats: initialThreats,
   role,
   onQuarantineNode,
   quarantinedNodes,
@@ -31,19 +33,54 @@ export function ThreatsView({
 }: ThreatsViewProps) {
   const [filterQuery, setFilterQuery] = useState("");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
+  const [page, setPage] = useState(1);
+  const pageSize = 15;
+  const [data, setData] = useState<AnomalyRecord[]>(initialThreats);
+  const [totalRecords, setTotalRecords] = useState<number>(9078);
+  const [loading, setLoading] = useState(false);
 
-  const filteredThreats = threats.filter((item) => {
-    const matchesSearch =
+  // Fetch paginated records directly from the database whenever filter or page changes
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPageData = async () => {
+      setLoading(true);
+      try {
+        const offset = (page - 1) * pageSize;
+        const res = await fetch(
+          `${API_BASE}/anomalies/critical?limit=${pageSize}&offset=${offset}&severity=${selectedSeverity}`
+        );
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted) {
+            setData(json.data || []);
+            setTotalRecords(json.total || 0);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching paginated threat logs:", err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchPageData();
+    return () => {
+      isMounted = false;
+    };
+  }, [page, selectedSeverity]);
+
+  // Client-side quick filter on current loaded page for instant search typing
+  const displayThreats = data.filter((item) => {
+    if (!filterQuery) return true;
+    return (
       item.algo_name.toLowerCase().includes(filterQuery.toLowerCase()) ||
       item.hostname.toLowerCase().includes(filterQuery.toLowerCase()) ||
       item.developer_name.toLowerCase().includes(filterQuery.toLowerCase()) ||
-      item.detected_threat_signature.toLowerCase().includes(filterQuery.toLowerCase());
-    const matchesSeverity =
-      selectedSeverity === "ALL" || item.alert_level === selectedSeverity;
-    return matchesSearch && matchesSeverity;
+      item.detected_threat_signature.toLowerCase().includes(filterQuery.toLowerCase())
+    );
   });
 
-  const totalThreatsInDb = (totalCritical || 0) + (totalHigh || 0);
+  const totalPages = Math.ceil(totalRecords / pageSize) || 1;
 
   return (
     <div className="space-y-4">
@@ -55,18 +92,12 @@ export function ThreatsView({
           </h2>
           <p className="text-xs text-[#888888] mt-0.5">
             Relational Security View: <code className="text-[#3ecf8e] font-mono">vw_critical_security_anomalies</code>
-            {totalThreatsInDb > 0 ? (
-              <span className="text-[#a0a0a0]"> ({totalThreatsInDb.toLocaleString()} active security anomalies in DB)</span>
-            ) : null}
+            <span className="text-[#a0a0a0]"> ({totalRecords.toLocaleString()} matching records in MySQL)</span>
           </p>
         </div>
 
         {/* Filter Controls */}
         <div className="flex items-center gap-2 text-xs">
-          <div className="text-xs font-mono text-[#808080] mr-1">
-            Showing <span className="text-white font-semibold">{filteredThreats.length}</span> of {threats.length} loaded
-          </div>
-
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-[#707070] absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
@@ -80,15 +111,18 @@ export function ThreatsView({
 
           <select
             value={selectedSeverity}
-            onChange={(e) => setSelectedSeverity(e.target.value)}
+            onChange={(e) => {
+              setSelectedSeverity(e.target.value);
+              setPage(1); // Reset to page 1 on filter change
+            }}
             className="bg-[#171717] border border-[#2a2a2a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#3ecf8e] font-mono"
           >
-            <option value="ALL">All Severities</option>
-            <option value="Critical">Critical (Auto-Terminated)</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-            <option value="Info">Info (Verified Safe)</option>
+            <option value="ALL">All Severities (9,078 Total)</option>
+            <option value="Critical">Critical (827 Auto-Terminated)</option>
+            <option value="High">High (889 Threats)</option>
+            <option value="Medium">Medium (2,826 Drift)</option>
+            <option value="Low">Low (1,860 Minor)</option>
+            <option value="Info">Info (2,676 Verified Safe)</option>
           </select>
         </div>
       </div>
@@ -111,13 +145,19 @@ export function ThreatsView({
               </tr>
             </thead>
             <tbody className="divide-y divide-[#222222]">
-              {filteredThreats.length > 0 ? (
-                filteredThreats.map((row, idx) => {
+              {loading ? (
+                <tr>
+                  <td colSpan={9} className="py-12 text-center text-[#888888] font-mono text-xs">
+                    Loading records from MySQL database...
+                  </td>
+                </tr>
+              ) : displayThreats.length > 0 ? (
+                displayThreats.map((row, idx) => {
                   const isQuarantined = quarantinedNodes.has(row.node_id);
                   const isTerminated = row.execution_status?.toLowerCase() === "terminated" || row.alert_level === "Critical";
                   return (
                     <tr
-                      key={idx}
+                      key={row.detection_id || idx}
                       className="hover:bg-[#1c1c1c] transition-colors"
                     >
                       <td className="py-3 px-4 font-mono font-medium text-white">
@@ -185,13 +225,44 @@ export function ThreatsView({
                 })
               ) : (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-[#707070] font-mono text-xs">
+                  <td colSpan={9} className="py-8 text-center text-[#707070] font-mono text-xs">
                     No threat entries matching current filter.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Real SQL-Driven Pagination Bar */}
+        <div className="flex items-center justify-between px-4 py-3 bg-[#141414] border-t border-[#262626] text-xs font-mono">
+          <div className="text-[#888888]">
+            Showing <span className="text-white font-medium">{(page - 1) * pageSize + 1}</span> to{" "}
+            <span className="text-white font-medium">
+              {Math.min(page * pageSize, totalRecords)}
+            </span>{" "}
+            of <span className="text-white font-semibold">{totalRecords.toLocaleString()}</span> entries
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              className="p-1 rounded border border-[#2a2a2a] bg-[#1a1a1a] text-[#ededed] hover:bg-[#252525] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-[#a0a0a0] px-1">
+              Page <span className="text-white font-semibold">{page}</span> of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || loading}
+              className="p-1 rounded border border-[#2a2a2a] bg-[#1a1a1a] text-[#ededed] hover:bg-[#252525] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
