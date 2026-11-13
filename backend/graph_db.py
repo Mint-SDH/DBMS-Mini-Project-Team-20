@@ -129,12 +129,20 @@ class InMemoryGraph:
                         })
                         queue.append((src, depth + 1))
 
+        # Format nice display response with sane limit for clean UI visualization
+        display_nodes = result_nodes[:25]
+        display_node_ids = {n["id"] for n in display_nodes}
+        display_edges = [
+            e for e in result_edges
+            if e["source"] in display_node_ids and e["target"] in display_node_ids
+        ]
+
         return {
             "root_node": self.nodes[start_id],
             "total_compromised_nodes": len(result_nodes),
             "traversal_depth": max_depth,
-            "nodes": result_nodes,
-            "edges": result_edges
+            "nodes": display_nodes,
+            "edges": display_edges
         }
 
 

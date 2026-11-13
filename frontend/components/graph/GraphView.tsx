@@ -147,11 +147,21 @@ export function GraphView() {
               }}
               className="bg-[#121212] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#3ecf8e] font-mono"
             >
-              <option value="ALGO_2">ALGO_2 (PoW_MemoryHard_Loop)</option>
-              <option value="ALGO_6">ALGO_6 (RawSocket_SYN_Scanner)</option>
-              <option value="ALGO_4">ALGO_4 (Arbitrage_Tick_Scanner)</option>
-              <option value="NODE_28">NODE_28 (node-us-east-23-07)</option>
-              <option value="DEV_74">DEV_74 (Joseph Brennan)</option>
+              <optgroup label="⚡ Rogue Attack Executions (High Blast Radius)">
+                <option value="RUN_379">RUN_379 (Cryptomining MemoryHard - 101 Exposed Entities)</option>
+                <option value="RUN_2">RUN_2 (PoW Nonce Hash - 143 Exposed Entities)</option>
+                <option value="RUN_4">RUN_4 (Spectre SideChannel - 153 Exposed Entities)</option>
+              </optgroup>
+              <optgroup label="🖥️ Physical Compute Nodes (Cluster Exposure)">
+                <option value="NODE_28">NODE_28 (node-us-east-23-07 - 52 Connected Entities)</option>
+                <option value="NODE_1">NODE_1 (worker-arm-01 - 52 Connected Entities)</option>
+                <option value="NODE_4">NODE_4 (worker-x86-04 - 49 Connected Entities)</option>
+              </optgroup>
+              <optgroup label="📦 Algorithms (Lineage & Author Spread)">
+                <option value="ALGO_2">ALGO_2 (PoW_MemoryHard_Loop - 8 Entities)</option>
+                <option value="ALGO_6">ALGO_6 (RawSocket_SYN_Scanner - 4 Entities)</option>
+                <option value="ALGO_156">ALGO_156 (BLAS_MatrixMul_AVX - High Traffic)</option>
+              </optgroup>
             </select>
           </div>
 
