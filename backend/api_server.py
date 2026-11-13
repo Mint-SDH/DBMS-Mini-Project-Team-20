@@ -43,9 +43,22 @@ app.add_middleware(
 # Configuration
 MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASS = os.getenv("MYSQL_PASS", "Marty@66")
-MYSQL_DB = os.getenv("MYSQL_DB", "algo_fingerprint_db")
 MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
+
+def find_mysql_password():
+    if "MYSQL_PASS" in os.environ:
+        return os.environ["MYSQL_PASS"]
+    for p in ["Mint@123", "Marty@66", "root", ""]:
+        try:
+            c = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=p, connect_timeout=1)
+            c.close()
+            return p
+        except Exception:
+            pass
+    return "Mint@123"
+
+MYSQL_PASS = find_mysql_password()
+MYSQL_DB = os.getenv("MYSQL_DB", "algo_fingerprint_db")
 
 # Initialize Subsystems
 vector_db = VectorDB()
